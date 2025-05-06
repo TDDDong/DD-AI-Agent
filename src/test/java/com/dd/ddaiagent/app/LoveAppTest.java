@@ -18,10 +18,10 @@ class LoveAppTest {
     @Test
     void doChat() {
         String chatId = UUID.randomUUID().toString();
-        String content = loveApp.doChat("你好, 我是dd", chatId);
+        String content = loveApp.doChat("你好, 我的名字叫dd", chatId);
         System.out.println("第一轮对话：" + content);
 
-        content = loveApp.doChat("我是谁？", chatId);
+        content = loveApp.doChat("我的名字是什么？", chatId);
         System.out.println("第二轮对话：" + content);
     }
 

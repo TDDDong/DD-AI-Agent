@@ -56,6 +56,12 @@
             <artifactId>kryo</artifactId>
             <version>5.6.2</version>
         </dependency>
+        <!-- 引入redisson依赖 springboot3.x版本需要对应3x版本 -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.46.0</version>
+        </dependency>
 
         <dependency>
             <groupId>cn.hutool</groupId>
