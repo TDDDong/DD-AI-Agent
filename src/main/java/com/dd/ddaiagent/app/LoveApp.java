@@ -1,6 +1,7 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
+import com.dd.ddaiagent.rag.QueryRewriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -32,11 +33,17 @@ public class LoveApp {
     @jakarta.annotation.Resource
     private VectorStore loveAppVectorStore;
 
-    @jakarta.annotation.Resource
-    private Advisor loveAppRagCloudAdvisor;
+    /**
+     * 需要使用时再开启 避免启动应用时加载浪费额度
+     */
+    /*@jakarta.annotation.Resource
+    private Advisor loveAppRagCloudAdvisor;*/
+
+    /*@jakarta.annotation.Resource
+    private VectorStore pgVectorVectorStore;*/
 
     @jakarta.annotation.Resource
-    private VectorStore pgVectorVectorStore;
+    private QueryRewriter queryRewriter;
 
     /*private static final String SYSTEM_PROMPT = "扮演深耕恋爱心理领域的专家。开场向用户表明身份，告知用户可倾诉恋爱难题。" +
             "围绕单身、恋爱、已婚三种状态提问：单身状态询问社交圈拓展及追求心仪对象的困扰；" +
@@ -105,14 +112,20 @@ public class LoveApp {
 
 
     public String doChatWithRag(String message, String chatId) {
+        //调用查询重写器重写
+        String rewritten = queryRewriter.doRewrite(message);
         ChatResponse chatResponse = chatClient.prompt()
-                .user(message)
+                //应用重构后的内容
+                .user(rewritten)
                 .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .advisors(new MyLoggerAdvisor())
-                //.advisors(new QuestionAnswerAdvisor(loveAppVectorStore)) //应用本地知识库
-                //.advisors(loveAppRagCloudAdvisor) //应用增强检索服务(云知识库服务)
-                .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore)) //应用增强检索服务(PgVector向量检索)
+                //应用 RAG 知识库问答
+                .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+                //应用 RAG 增强检索服务(云知识库服务)
+                //.advisors(loveAppRagCloudAdvisor)
+                //应用 RAG 增强检索服务(PgVector向量检索)
+                //.advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();

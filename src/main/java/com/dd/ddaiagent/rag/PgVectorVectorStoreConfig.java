@@ -20,7 +20,7 @@ public class PgVectorVectorStoreConfig {
     @Resource
     private LoveAppDocumentLoader loveAppDocumentLoader;
 
-    @Bean
+    //@Bean
     public VectorStore pgVectorVectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel dashscopeEmbeddingModel) {
         VectorStore vectorStore = PgVectorStore.builder(jdbcTemplate, dashscopeEmbeddingModel)
                 .dimensions(1536)                    // Optional: defaults to model dimensions or 1536
