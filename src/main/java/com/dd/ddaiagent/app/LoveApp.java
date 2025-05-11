@@ -1,6 +1,7 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
+import com.dd.ddaiagent.rag.LoveAppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.QueryRewriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -121,11 +122,12 @@ public class LoveApp {
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .advisors(new MyLoggerAdvisor())
                 //应用 RAG 知识库问答
-                .advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
+                //.advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
                 //应用 RAG 增强检索服务(云知识库服务)
                 //.advisors(loveAppRagCloudAdvisor)
                 //应用 RAG 增强检索服务(PgVector向量检索)
                 //.advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))
+                .advisors(LoveAppRagCustomAdvisorFactory.createLoveAppRagCustomAdvisor(loveAppVectorStore, "已婚"))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
