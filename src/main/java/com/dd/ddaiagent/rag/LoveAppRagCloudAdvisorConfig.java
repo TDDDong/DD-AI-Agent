@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.advisor;
+package com.dd.ddaiagent.rag;
 
 import com.alibaba.cloud.ai.dashscope.api.DashScopeApi;
 import com.alibaba.cloud.ai.dashscope.rag.DashScopeDocumentRetriever;
@@ -18,7 +18,12 @@ class LoveAppRagCloudAdvisorConfig {
     @Value("${spring.ai.dashscope.api-key}")
     private String dashScopeApiKey;
 
-    @Bean
+    /**
+     * 基于云知识库的检索增强器
+     * 需要使用时再放开注释
+     * @return
+     */
+    //@Bean
     public Advisor loveAppRagCloudAdvisor() {
         DashScopeApi dashScopeApi = new DashScopeApi(dashScopeApiKey);
         final String KNOWLEDGE_INDEX = "恋爱大师";

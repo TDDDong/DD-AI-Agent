@@ -4,6 +4,7 @@ import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
@@ -33,6 +34,9 @@ public class LoveApp {
 
     @jakarta.annotation.Resource
     private Advisor loveAppRagCloudAdvisor;
+
+    @jakarta.annotation.Resource
+    private VectorStore pgVectorVectorStore;
 
     /*private static final String SYSTEM_PROMPT = "扮演深耕恋爱心理领域的专家。开场向用户表明身份，告知用户可倾诉恋爱难题。" +
             "围绕单身、恋爱、已婚三种状态提问：单身状态询问社交圈拓展及追求心仪对象的困扰；" +
@@ -107,7 +111,8 @@ public class LoveApp {
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .advisors(new MyLoggerAdvisor())
                 //.advisors(new QuestionAnswerAdvisor(loveAppVectorStore)) //应用本地知识库
-                .advisors(loveAppRagCloudAdvisor) //应用增强检索服务(云知识库服务)
+                //.advisors(loveAppRagCloudAdvisor) //应用增强检索服务(云知识库服务)
+                .advisors(new QuestionAnswerAdvisor(pgVectorVectorStore)) //应用增强检索服务(PgVector向量检索)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();

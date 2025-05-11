@@ -16,7 +16,11 @@ public class LoveAppVectorStoreConfig {
     @Resource
     private LoveAppDocumentLoader loveAppDocumentLoader;
 
-    @Bean
+    /**
+     * 将文档存储在本地内存中 作为向量数据
+     * 需要使用时放开注释即会作为bean注入
+     */
+    //@Bean
     VectorStore loveAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         SimpleVectorStore simpleVectorStore = SimpleVectorStore.builder(dashscopeEmbeddingModel).build();
         //加载所有文档
