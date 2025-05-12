@@ -1,6 +1,7 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
+import com.dd.ddaiagent.chatMemory.RedisChatMemory;
 import com.dd.ddaiagent.rag.LoveAppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.QueryRewriter;
 import lombok.extern.slf4j.Slf4j;
@@ -114,10 +115,10 @@ public class LoveApp {
 
     public String doChatWithRag(String message, String chatId) {
         //调用查询重写器重写
-        String rewritten = queryRewriter.doRewrite(message);
+        //String rewritten = queryRewriter.doRewrite(message);
         ChatResponse chatResponse = chatClient.prompt()
                 //应用重构后的内容
-                .user(rewritten)
+                .user(message)
                 .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
                 .advisors(new MyLoggerAdvisor())
