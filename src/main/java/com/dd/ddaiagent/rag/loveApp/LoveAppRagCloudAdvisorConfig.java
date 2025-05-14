@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.loveApp;
 
 import com.alibaba.cloud.ai.dashscope.api.DashScopeApi;
 import com.alibaba.cloud.ai.dashscope.rag.DashScopeDocumentRetriever;

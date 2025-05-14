@@ -1,5 +1,6 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.loveApp;
 
+import com.dd.ddaiagent.rag.loveApp.LoveAppContextualQueryAugmenterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;

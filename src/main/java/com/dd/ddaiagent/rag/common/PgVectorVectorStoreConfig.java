@@ -1,11 +1,11 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.common;
 
+import com.dd.ddaiagent.rag.loveApp.LoveAppDocumentLoader;
 import jakarta.annotation.Resource;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 

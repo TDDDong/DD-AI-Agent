@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.common;
 
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.model.ChatModel;

@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.loveApp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -29,7 +29,7 @@ public class LoveAppDocumentLoader {
         List<Document> allDocuments = new ArrayList<>();
         try {
             //从资源目录下读取对应的markdown格式文件
-            Resource[] resources = resourcePatternResolver.getResources("classpath:document/*.md");
+            Resource[] resources = resourcePatternResolver.getResources("classpath:document/LoveApp/*.md");
             for (Resource resource : resources) {
                 String filename = resource.getFilename();
                 String status = filename.substring(filename.length() - 6, filename.length() - 4);

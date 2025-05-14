@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.rag;
+package com.dd.ddaiagent.rag.common;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -10,7 +10,7 @@ import java.util.List;
  * 文本切割器
  */
 @Component
-class MyTokenTextSplitter {
+public class MyTokenTextSplitter {
 
     public List<Document> splitDocuments(List<Document> documents) {
         TokenTextSplitter splitter = new TokenTextSplitter();
