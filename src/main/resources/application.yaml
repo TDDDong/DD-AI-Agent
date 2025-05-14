@@ -8,6 +8,12 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.dd.ddaiagent.entity
+  configuration:
+    map-underscore-to-camel-case: true
 server:
   port: 8123
   servlet:

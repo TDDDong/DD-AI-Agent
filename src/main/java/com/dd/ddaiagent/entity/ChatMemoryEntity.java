@@ -15,11 +15,19 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ChatMemoryEntity implements Serializable {
 
+    private String conversationId;
+
     private String type;
 
     private String text;
 
     public ChatMemoryEntity(Message message) {
+        this.type = message.getMessageType().getValue();
+        this.text = message.getText();
+    }
+
+    public ChatMemoryEntity(String conversationId, Message message) {
+        this.conversationId = conversationId;
         this.type = message.getMessageType().getValue();
         this.text = message.getText();
     }

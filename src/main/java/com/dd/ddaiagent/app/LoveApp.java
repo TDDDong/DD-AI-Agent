@@ -1,14 +1,11 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
-import com.dd.ddaiagent.chatMemory.RedisChatMemory;
-import com.dd.ddaiagent.rag.LoveAppRagCustomAdvisorFactory;
-import com.dd.ddaiagent.rag.QueryRewriter;
+import com.dd.ddaiagent.rag.loveApp.LoveAppRagCustomAdvisorFactory;
+import com.dd.ddaiagent.rag.common.QueryRewriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -55,7 +52,7 @@ public class LoveApp {
 
 
 
-    public LoveApp(ChatModel dashScopeChatModel, @Qualifier("redisChatMemory") ChatMemory chatMemory,
+    public LoveApp(ChatModel dashScopeChatModel, @Qualifier("mySqlChatMemory") ChatMemory chatMemory,
                    @Value("classpath:/prompts/system-message.st") Resource systemResource) {
         //ChatMemory chatMemory = new InMemoryChatMemory();
         /*String fileDir = System.getProperty("user.dir") + "/tmp/chat-memory";

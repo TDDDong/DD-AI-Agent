@@ -1,6 +1,5 @@
 package com.dd.ddaiagent;
 
-import com.dd.ddaiagent.rag.PgVectorVectorStoreConfig;
 import org.springframework.ai.autoconfigure.vectorstore.pgvector.PgVectorStoreAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
