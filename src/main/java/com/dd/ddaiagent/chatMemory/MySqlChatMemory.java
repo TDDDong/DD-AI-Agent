@@ -1,7 +1,7 @@
 package com.dd.ddaiagent.chatMemory;
 
 import com.dd.ddaiagent.entity.ChatMemoryEntity;
-import com.dd.ddaiagent.mapper.ChatMemoryMapper;
+import com.dd.ddaiagent.mapper.mysql.ChatMemoryMapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

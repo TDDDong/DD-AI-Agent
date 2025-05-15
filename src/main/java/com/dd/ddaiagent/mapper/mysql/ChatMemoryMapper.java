@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.mapper;
+package com.dd.ddaiagent.mapper.mysql;
 
 import com.dd.ddaiagent.entity.ChatMemoryEntity;
 import org.apache.ibatis.annotations.*;
