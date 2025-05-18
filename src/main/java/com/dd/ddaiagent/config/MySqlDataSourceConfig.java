@@ -48,7 +48,7 @@ public class MySqlDataSourceConfig {
     //模板配置
     @Primary
     @Bean("mysqlSqlSessionTemplate")
-    public SqlSessionTemplate primarySqlSessionTemplate(SqlSessionFactory mysqlSqlSessionFactory) {
+    public SqlSessionTemplate mysqlSqlSessionTemplate(SqlSessionFactory mysqlSqlSessionFactory) {
         return new SqlSessionTemplate(mysqlSqlSessionFactory);
     }
 }

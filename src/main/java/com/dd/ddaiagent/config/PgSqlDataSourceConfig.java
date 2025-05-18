@@ -44,7 +44,7 @@ public class PgSqlDataSourceConfig {
 
     //模板配置
     @Bean("pgsqlSqlSessionTemplate")
-    public SqlSessionTemplate primarySqlSessionTemplate(@Qualifier("pgsqlSqlSessionFactory") SqlSessionFactory pgsqlSqlSessionFactory) {
+    public SqlSessionTemplate pgsqlSqlSessionTemplate(@Qualifier("pgsqlSqlSessionFactory") SqlSessionFactory pgsqlSqlSessionFactory) {
         return new SqlSessionTemplate(pgsqlSqlSessionFactory);
     }
 }

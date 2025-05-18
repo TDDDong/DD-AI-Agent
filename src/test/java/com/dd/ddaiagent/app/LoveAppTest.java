@@ -26,6 +26,13 @@ class LoveAppTest {
     }
 
     @Test
+    void queryWeather() {
+        String chatId = UUID.randomUUID().toString();
+        String content = loveApp.doChat("帮我查询一下广州市的实时天气情况", chatId);
+        System.out.println("查询结果：" + content);
+    }
+
+    @Test
     void doChatWithReport() {
         String chatId = UUID.randomUUID().toString();
         // 第一轮
