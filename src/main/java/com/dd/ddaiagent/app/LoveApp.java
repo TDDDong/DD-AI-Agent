@@ -3,6 +3,7 @@ package com.dd.ddaiagent.app;
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
 import com.dd.ddaiagent.rag.loveApp.LoveAppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.common.QueryRewriter;
+import com.dd.ddaiagent.tools.ToolRegistration;
 import com.dd.ddaiagent.tools.WeatherQueryTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -83,7 +84,7 @@ public class LoveApp {
                 .user(userMsg)
                 .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
-                .tools(ToolCallbacks.from(new WeatherQueryTool()))
+                .tools(allTools)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
