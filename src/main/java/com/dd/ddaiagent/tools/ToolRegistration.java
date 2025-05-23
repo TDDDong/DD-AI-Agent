@@ -29,6 +29,7 @@ public class ToolRegistration {
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
         WeatherQueryTool weatherQueryTool = new WeatherQueryTool(aMapKey, cityCodeInitTask);
+        TerminateTool terminateTool = new TerminateTool();
         return ToolCallbacks.from(
             fileOperationTool,
             webSearchTool,
@@ -36,7 +37,8 @@ public class ToolRegistration {
             resourceDownloadTool,
             terminalOperationTool,
             pdfGenerationTool,
-            weatherQueryTool
+            weatherQueryTool,
+            terminateTool
         );
     }
 }
