@@ -5,6 +5,7 @@ import com.dd.ddaiagent.rag.loveApp.LoveAppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.common.QueryRewriter;
 import com.dd.ddaiagent.tools.ToolRegistration;
 import com.dd.ddaiagent.tools.WeatherQueryTool;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -18,8 +19,9 @@ import org.springframework.ai.tool.ToolCallbacks;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,19 +36,25 @@ public class LoveApp {
 
     public final ChatClient chatClient;
 
-    @jakarta.annotation.Resource
+    //@Resource
     private VectorStore loveAppVectorStore;
+
+    @Resource
+    private ToolCallback[] allTools;
+
+    @Resource
+    private ToolCallbackProvider toolCallbackProvider;
 
     /**
      * 需要使用时再开启 避免启动应用时加载浪费额度
      */
-    /*@jakarta.annotation.Resource
+    /*@Resource
     private Advisor loveAppRagCloudAdvisor;*/
 
-    /*@jakarta.annotation.Resource
+    /*@Resource
     private VectorStore pgVectorVectorStore;*/
 
-    @jakarta.annotation.Resource
+    @Resource
     private QueryRewriter queryRewriter;
 
     /*private static final String SYSTEM_PROMPT = "扮演深耕恋爱心理领域的专家。开场向用户表明身份，告知用户可倾诉恋爱难题。" +
@@ -57,7 +65,7 @@ public class LoveApp {
 
 
     public LoveApp(ChatModel dashScopeChatModel, @Qualifier("mySqlChatMemory") ChatMemory chatMemory,
-                   @Value("classpath:/prompts/system-message.st") Resource systemResource) {
+                   @Value("classpath:/prompts/system-message.st") org.springframework.core.io.Resource systemResource) {
         //ChatMemory chatMemory = new InMemoryChatMemory();
         /*String fileDir = System.getProperty("user.dir") + "/tmp/chat-memory";
         ChatMemory chatMemory = new FileBasedChatMemory(fileDir);*/
@@ -94,6 +102,19 @@ public class LoveApp {
     }
 
     /**
+     * 流式输出的聊天
+     */
+    public Flux<String> doChatByStream(String userMsg, String chatId) {
+        return chatClient.prompt()
+                .user(userMsg)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .tools(allTools)
+                .stream()
+                .content();
+    }
+
+    /**
      * 自定义返回实体类 用于接收ai返回的数据
      * @param title
      * @param suggestions
@@ -103,6 +124,9 @@ public class LoveApp {
     }
 
 
+    /**
+     * 按指定实体类型输出结果的聊天
+     */
     public LoveReport doChatWithReport(String userMsg, String chatId) {
         LoveReport loveReport = chatClient.prompt()
                 .user(userMsg)
@@ -115,7 +139,9 @@ public class LoveApp {
         return loveReport;
     }
 
-
+    /**
+     * 基于RAG实现的聊天
+     */
     public String doChatWithRag(String message, String chatId) {
         //调用查询重写器重写
         //String rewritten = queryRewriter.doRewrite(message);
@@ -139,9 +165,9 @@ public class LoveApp {
         return content;
     }
 
-    @jakarta.annotation.Resource
-    private ToolCallback[] allTools;
-
+    /**
+     * 提供工具调用的聊天
+     */
     public String doChatWithTools(String message, String chatId) {
         ChatResponse response = chatClient
                 .prompt()
@@ -158,9 +184,9 @@ public class LoveApp {
         return content;
     }
 
-    @jakarta.annotation.Resource
-    private ToolCallbackProvider toolCallbackProvider;
-
+    /**
+     * 提供MCP服务的聊天
+     */
     public String doChatWithMCP(String message, String chatId) {
         ChatResponse response = chatClient
                 .prompt()
