@@ -56,7 +56,7 @@ class LoveAppTest {
         /*String message = "我的另一半居住在广东省广州市，请帮我找到 5 公里内合适的约会地点";
         String answer =  loveApp.doChatWithMCP(message, chatId);*/
         //测试mcp服务
-        String message = "帮我搜一些关于广东美食的图片";
+        String message = "帮我搜一些能哄另一半开心的图片";
         String answer = loveApp.doChatWithMCP(message, chatId);
         Assertions.assertNotNull(answer);
     }
