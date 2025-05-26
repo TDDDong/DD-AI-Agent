@@ -14,6 +14,9 @@ public class ToolRegistration {
     @Value("${search-api.api-key}")
     private String searchApiKey;
 
+    @Value("${zhipu.api-key}")
+    private String zhiPuApiKey;
+
     @Value("${amap.key}")
     private String aMapKey;
 
@@ -23,22 +26,26 @@ public class ToolRegistration {
     @Bean
     public ToolCallback[] allTools() {
         FileOperationTool fileOperationTool = new FileOperationTool();
-        WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
+        //WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
+        ZhiPuWebSearchTool zhiPuWebSearchTool = new ZhiPuWebSearchTool(zhiPuApiKey);
         WebScrapingTool webScrapingTool = new WebScrapingTool();
         ResourceDownloadTool resourceDownloadTool = new ResourceDownloadTool();
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
         WeatherQueryTool weatherQueryTool = new WeatherQueryTool(aMapKey, cityCodeInitTask);
         TerminateTool terminateTool = new TerminateTool();
+        GeoCodeTool geoCodeTool = new GeoCodeTool(aMapKey);
         return ToolCallbacks.from(
             fileOperationTool,
-            webSearchTool,
+            //webSearchTool,
+            zhiPuWebSearchTool,
             webScrapingTool,
             resourceDownloadTool,
             terminalOperationTool,
             pdfGenerationTool,
             weatherQueryTool,
-            terminateTool
+            terminateTool,
+            geoCodeTool
         );
     }
 }
