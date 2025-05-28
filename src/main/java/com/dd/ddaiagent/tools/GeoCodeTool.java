@@ -29,7 +29,7 @@ public class GeoCodeTool {
                     "village, street, street number, estate, building. Example: '北京市朝阳区阜通东大街6号'")
             String address
     ) {
-        String url = "https://restapi.amap.com/v3/geocode/geo?parameters";
+        String url = "https://restapi.amap.com/v3/geocode/geo";
         Map<String, Object> params = new HashMap<>();
         params.put("key", aMapKey);
         params.put("address", address);

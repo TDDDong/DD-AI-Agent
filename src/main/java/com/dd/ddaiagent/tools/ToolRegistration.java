@@ -35,6 +35,7 @@ public class ToolRegistration {
         WeatherQueryTool weatherQueryTool = new WeatherQueryTool(aMapKey, cityCodeInitTask);
         TerminateTool terminateTool = new TerminateTool();
         GeoCodeTool geoCodeTool = new GeoCodeTool(aMapKey);
+        SearchAroundTool searchAroundTool = new SearchAroundTool(aMapKey);
         return ToolCallbacks.from(
             fileOperationTool,
             //webSearchTool,
@@ -45,7 +46,8 @@ public class ToolRegistration {
             pdfGenerationTool,
             weatherQueryTool,
             terminateTool,
-            geoCodeTool
+            geoCodeTool,
+            searchAroundTool
         );
     }
 }
