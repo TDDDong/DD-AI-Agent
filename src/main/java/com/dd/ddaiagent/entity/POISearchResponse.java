@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 存储高德周边搜索结果
+ */
 @Data
 @NoArgsConstructor
 public class POISearchResponse {
@@ -19,6 +22,10 @@ public class POISearchResponse {
      */
     private String address;
     /**
+     * 经纬度
+     */
+    private String location;
+    /**
      * 图片列表
      */
     private List<String> photoUrl;
@@ -26,6 +33,7 @@ public class POISearchResponse {
     public POISearchResponse(JSONObject poi) {
         this.name = poi.getStr("name");
         this.address = poi.getStr("address");
+        this.location = poi.getStr("location");
         this.photoUrl = poi.getJSONArray("photos").stream()
                 .map(photo -> {
                     JSONObject obj = (JSONObject) photo;

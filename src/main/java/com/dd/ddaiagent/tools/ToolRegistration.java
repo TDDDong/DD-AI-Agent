@@ -36,6 +36,7 @@ public class ToolRegistration {
         TerminateTool terminateTool = new TerminateTool();
         GeoCodeTool geoCodeTool = new GeoCodeTool(aMapKey);
         SearchAroundTool searchAroundTool = new SearchAroundTool(aMapKey);
+        WalkToDirectionTool walkToDirectionTool = new WalkToDirectionTool(aMapKey);
         return ToolCallbacks.from(
             fileOperationTool,
             //webSearchTool,
@@ -47,7 +48,8 @@ public class ToolRegistration {
             weatherQueryTool,
             terminateTool,
             geoCodeTool,
-            searchAroundTool
+            searchAroundTool,
+            walkToDirectionTool
         );
     }
 }
