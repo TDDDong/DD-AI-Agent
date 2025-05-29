@@ -28,7 +28,7 @@ public class SearchAroundTool {
     public List<POISearchResponse> searchAroundPlace(@ToolParam(description = "Center point coordinates in 'longitude,latitude' format. Example: '113.271429,23.103838'") String location,
                                                      @ToolParam(description = "Search radius in meters, maximum 50000", required = false) Integer radius,
                                                      @ToolParam(description = "Optional. POI type code to filter results. Available options: " +
-                                            "'050000' (Restaurants/Dining Services), '070000' (Life Services), '120000' (Commercial Residential). " +
+                                            "'050000' (Restaurants/Dining Services), '070000' (Life Services). " +
                                             "Note: It's recommended to make separate API calls for each type rather than combining " +
                                             "multiple types, as this ensures more comprehensive results due to API result count limitations.",
                                             required = false)
@@ -38,6 +38,7 @@ public class SearchAroundTool {
         Map<String, Object> params = new HashMap<>();
         params.put("key", aMapKey);
         params.put("location", location);
+        params.put("offset", 5);
         if (!Objects.isNull(radius)) {
             params.put("radius", radius);
         }

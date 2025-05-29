@@ -26,6 +26,14 @@ public class POISearchResponse {
      */
     private String location;
     /**
+     * 评分 仅存在于餐饮、酒店、景点、影院类 POI 之下
+     */
+    private String rating;
+    /**
+     * 人均消费 仅存在于餐饮、酒店、景点、影院类 POI 之下
+     */
+    private String cost;
+    /**
      * 图片列表
      */
     private List<String> photoUrl;
@@ -39,5 +47,8 @@ public class POISearchResponse {
                     JSONObject obj = (JSONObject) photo;
                     return obj.getStr("url");
                 }).collect(Collectors.toList());
+        JSONObject bizExt = poi.getJSONObject("biz_ext");
+        this.rating = bizExt.getStr("rating");
+        this.cost = bizExt.getStr("cost");
     }
 }
