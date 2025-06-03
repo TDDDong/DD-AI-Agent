@@ -27,18 +27,17 @@ public class SearchAroundTool {
     @Tool(description = "Search for points of interest (POIs) around a specified location within a given radius")
     public List<POISearchResponse> searchAroundPlace(@ToolParam(description = "Center point coordinates in 'longitude,latitude' format. Example: '113.271429,23.103838'") String location,
                                                      @ToolParam(description = "Search radius in meters, maximum 50000", required = false) Integer radius,
-                                                     @ToolParam(description = "Optional. POI type code to filter results. Available options: " +
-                                            "'050000' (Restaurants/Dining Services), '070000' (Life Services). " +
-                                            "Note: It's recommended to make separate API calls for each type rather than combining " +
-                                            "multiple types, as this ensures more comprehensive results due to API result count limitations.",
-                                            required = false)
-                                        String types
+                                                     @ToolParam(description = "Optional. POI type code to filter results. Only accepts two values: " +
+                                                                     "'050000' (Restaurants/Dining Services) or '110000' (Scenic Spots/Attractions). " +
+                                                                     "Note: It's recommended to make separate API calls for each type rather than combining " +
+                                                                     "multiple types, as this ensures more comprehensive results due to API result count limitations.",
+                                                             required = false) String types
                                     ) {
         String url = "https://restapi.amap.com/v3/place/around";
         Map<String, Object> params = new HashMap<>();
         params.put("key", aMapKey);
         params.put("location", location);
-        params.put("offset", 5);
+        params.put("offset", 3);
         if (!Objects.isNull(radius)) {
             params.put("radius", radius);
         }
