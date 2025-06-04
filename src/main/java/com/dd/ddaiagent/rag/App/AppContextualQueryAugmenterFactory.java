@@ -1,15 +1,24 @@
-package com.dd.ddaiagent.rag.loveApp;
+package com.dd.ddaiagent.rag.App;
 
+
+import cn.hutool.core.io.resource.ResourceUtil;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
-public class LoveAppContextualQueryAugmenterFactory {
-    public static ContextualQueryAugmenter createInstance() {
-        PromptTemplate emptyContextPromptTemplate = new PromptTemplate("""
-                你应该输出下面的内容：
-                抱歉，我只能回答恋爱相关的问题，别的没办法帮到您哦，
-                有问题可以联系客服邮箱 dd126@email.com
-                """);
+import java.util.HashMap;
+import java.util.Map;
+
+public class AppContextualQueryAugmenterFactory {
+    private static final Resource resource = new ClassPathResource("/prompts/empty-context.st");;
+
+    public static ContextualQueryAugmenter createInstance(String field) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("field", field);
+        PromptTemplate emptyContextPromptTemplate = new PromptTemplate(resource, variables);
         return ContextualQueryAugmenter.builder()
                 /**
                  * if (this.allowEmptyContext) {

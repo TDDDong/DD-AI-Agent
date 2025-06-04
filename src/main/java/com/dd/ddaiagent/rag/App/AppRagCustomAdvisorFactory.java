@@ -1,6 +1,5 @@
-package com.dd.ddaiagent.rag.loveApp;
+package com.dd.ddaiagent.rag.App;
 
-import com.dd.ddaiagent.rag.loveApp.LoveAppContextualQueryAugmenterFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
@@ -11,9 +10,9 @@ import org.springframework.ai.vectorstore.filter.Filter;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 
 @Slf4j
-public class LoveAppRagCustomAdvisorFactory {
+public class AppRagCustomAdvisorFactory {
 
-    public static Advisor createLoveAppRagCustomAdvisor(VectorStore vectorStore, String status) {
+    public static Advisor createAppRagCustomAdvisor(VectorStore vectorStore, String status, String field) {
         //基于文档元信息中的status进行标签筛选
         Filter.Expression expression = new FilterExpressionBuilder().eq("status", status).build();
         DocumentRetriever documentRetriever = VectorStoreDocumentRetriever.builder()
@@ -24,7 +23,7 @@ public class LoveAppRagCustomAdvisorFactory {
                 .build();
         return RetrievalAugmentationAdvisor.builder()
                 .documentRetriever(documentRetriever) //文档检索器
-                .queryAugmenter(LoveAppContextualQueryAugmenterFactory.createInstance()) //查询增强器
+                .queryAugmenter(AppContextualQueryAugmenterFactory.createInstance(field)) //查询增强器
                 .build();
     }
 }

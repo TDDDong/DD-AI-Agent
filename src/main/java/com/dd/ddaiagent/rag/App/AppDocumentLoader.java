@@ -1,4 +1,4 @@
-package com.dd.ddaiagent.rag.loveApp;
+package com.dd.ddaiagent.rag.App;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -14,22 +14,22 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class LoveAppDocumentLoader {
+public class AppDocumentLoader {
 
     private final ResourcePatternResolver resourcePatternResolver;
 
-    public LoveAppDocumentLoader(ResourcePatternResolver resourcePatternResolver) {
+    public AppDocumentLoader(ResourcePatternResolver resourcePatternResolver) {
         this.resourcePatternResolver = resourcePatternResolver;
     }
 
     /**
-     * 用于加载资源目录下的多个MarkDown格式文件
+     * 用于根据不同应用加载资源目录下对应的多个MarkDown格式文件
      */
-    public List<Document> loadMarkDowns() {
+    public List<Document> loadMarkDowns(String appName) {
         List<Document> allDocuments = new ArrayList<>();
         try {
             //从资源目录下读取对应的markdown格式文件
-            Resource[] resources = resourcePatternResolver.getResources("classpath:document/LoveApp/*.md");
+            Resource[] resources = resourcePatternResolver.getResources("classpath:document/" + appName + "/*.md");
             for (Resource resource : resources) {
                 String filename = resource.getFilename();
                 String status = filename.substring(filename.length() - 6, filename.length() - 4);

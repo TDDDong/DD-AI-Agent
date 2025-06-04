@@ -1,6 +1,6 @@
 package com.dd.ddaiagent.rag.common;
 
-import com.dd.ddaiagent.rag.loveApp.LoveAppDocumentLoader;
+import com.dd.ddaiagent.rag.App.AppDocumentLoader;
 import jakarta.annotation.Resource;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -18,7 +18,7 @@ import static org.springframework.ai.vectorstore.pgvector.PgVectorStore.PgIndexT
 public class PgVectorVectorStoreConfig {
 
     @Resource
-    private LoveAppDocumentLoader loveAppDocumentLoader;
+    private AppDocumentLoader appDocumentLoader;
 
     //@Bean
     public VectorStore pgVectorVectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel dashscopeEmbeddingModel) {
@@ -31,7 +31,7 @@ public class PgVectorVectorStoreConfig {
                 .vectorTableName("vector_store")     // Optional: defaults to "vector_store"
                 .maxDocumentBatchSize(10000)         // Optional: defaults to 10000
                 .build();
-        List<Document> documents = loveAppDocumentLoader.loadMarkDowns();
+        List<Document> documents = appDocumentLoader.loadMarkDowns("LoveApp");
         vectorStore.add(documents);
         return vectorStore;
     }

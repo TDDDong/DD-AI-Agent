@@ -1,10 +1,8 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
-import com.dd.ddaiagent.rag.loveApp.LoveAppRagCustomAdvisorFactory;
+import com.dd.ddaiagent.rag.App.AppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.common.QueryRewriter;
-import com.dd.ddaiagent.tools.ToolRegistration;
-import com.dd.ddaiagent.tools.WeatherQueryTool;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,7 +13,6 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
-import org.springframework.ai.tool.ToolCallbacks;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +33,7 @@ public class LoveApp {
 
     public final ChatClient chatClient;
 
-    //@Resource
+    @Resource
     private VectorStore loveAppVectorStore;
 
     @Resource
@@ -159,7 +156,7 @@ public class LoveApp {
                 //.advisors(loveAppRagCloudAdvisor)
                 //应用 RAG 增强检索服务(PgVector向量检索)
                 //.advisors(new QuestionAnswerAdvisor(pgVectorVectorStore))
-                .advisors(LoveAppRagCustomAdvisorFactory.createLoveAppRagCustomAdvisor(loveAppVectorStore, "已婚"))
+                .advisors(AppRagCustomAdvisorFactory.createAppRagCustomAdvisor(loveAppVectorStore, "已婚", "恋爱"))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
