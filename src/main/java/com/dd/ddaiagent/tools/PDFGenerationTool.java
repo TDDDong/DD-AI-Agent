@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import com.dd.ddaiagent.constant.FileConstant;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -113,44 +114,109 @@ public class PDFGenerationTool {
                 continue;
             }
 
-            // 处理列表项
-            if (line.startsWith("- ") || line.startsWith("* ")) {
-                String listItemText = line.substring(2);
-                // 简化列表处理，使用普通段落加缩进和前缀
-                Paragraph listItem = new Paragraph("• " + listItemText);
+            // 处理列表项 - 同时处理数字列表和符号列表
+            if (line.matches("^\\d+\\.\\s.*") || line.startsWith("- ") || line.startsWith("* ")) {
+                String listItemText;
+                int indent = 20;
+
+                if (line.matches("^\\d+\\.\\s.*")) {
+                    // 数字列表
+                    int dotIndex = line.indexOf(".");
+                    String number = line.substring(0, dotIndex + 1);
+                    listItemText = number + " " + line.substring(dotIndex + 1).trim();
+                } else {
+                    // 符号列表
+                    listItemText = "• " + line.substring(2);
+                }
+
+                Paragraph listItem = new Paragraph(listItemText);
                 listItem.setFont(font);
                 listItem.setFontSize(12);
-                listItem.setMarginLeft(20);
+                listItem.setMarginLeft(indent);
                 listItem.setMarginBottom(2);
                 document.add(listItem);
                 continue;
             }
 
-            // 处理图片
-            if (line.contains("![") && line.contains("](") && line.contains(")")) {
-                // 提取图片URL
-                int startIndex = line.indexOf("](") + 2;
-                int endIndex = line.indexOf(")", startIndex);
-                String imageUrl = line.substring(startIndex, endIndex);
-
-                try {
-                    // 从URL加载图片
-                    ImageData imageData = ImageDataFactory.create(new URL(imageUrl));
-                    Image image = new Image(imageData);
-
-                    // 设置图片宽度为页面宽度的80%
-                    float pageWidth = pdf.getDefaultPageSize().getWidth() - document.getLeftMargin() - document.getRightMargin();
-                    image.setWidth(pageWidth * 0.8f);
-                    image.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                    image.setMarginBottom(10);
-                    image.setMarginTop(10);
-                    document.add(image);
-                } catch (Exception e) {
-                    Paragraph errorPara = new Paragraph("图片加载失败: " + imageUrl);
-                    errorPara.setFont(font);
-                    errorPara.setFontSize(10);
-                    document.add(errorPara);
+            // 处理嵌套列表项 (缩进更多的列表项)
+            if (line.matches("^\\s+[-*]\\s.*")) {
+                int leadingSpaces = 0;
+                while (leadingSpaces < line.length() && Character.isWhitespace(line.charAt(leadingSpaces))) {
+                    leadingSpaces++;
                 }
+
+                String listItemText = "◦ " + line.substring(leadingSpaces + 2).trim();
+                Paragraph listItem = new Paragraph(listItemText);
+                listItem.setFont(font);
+                listItem.setFontSize(12);
+                listItem.setMarginLeft(20 + (leadingSpaces * 5)); // 根据缩进级别增加左边距
+                listItem.setMarginBottom(2);
+                document.add(listItem);
+                continue;
+            }
+
+            // 处理图片 - 更健壮的图片URL提取
+            if (line.contains("![") && line.contains("](") && line.contains(")")) {
+                try {
+                    int startUrlIndex = line.indexOf("](") + 2;
+                    int endUrlIndex = line.indexOf(")", startUrlIndex);
+                    if (startUrlIndex > 1 && endUrlIndex > startUrlIndex) {
+                        String imageUrl = line.substring(startUrlIndex, endUrlIndex);
+
+                        // 清理URL (移除可能的空格或引号)
+                        imageUrl = imageUrl.trim().replace("\"", "").replace("'", "");
+
+                        try {
+                            // 从URL加载图片
+                            ImageData imageData = ImageDataFactory.create(new URL(imageUrl));
+                            Image image = new Image(imageData);
+
+                            // 设置图片宽度为页面宽度的80%
+                            float pageWidth = pdf.getDefaultPageSize().getWidth() - document.getLeftMargin() - document.getRightMargin();
+                            image.setWidth(pageWidth * 0.8f);
+                            image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                            image.setMarginBottom(10);
+                            image.setMarginTop(10);
+                            document.add(image);
+                        } catch (Exception e) {
+                            Paragraph errorPara = new Paragraph("图片加载失败: " + imageUrl + " (" + e.getMessage() + ")");
+                            errorPara.setFont(font);
+                            errorPara.setFontSize(10);
+                            errorPara.setFontColor(ColorConstants.RED);
+                            document.add(errorPara);
+                        }
+                    }
+                } catch (Exception e) {
+                    // 图片解析失败，添加原始文本
+                    Paragraph para = new Paragraph(line);
+                    para.setFont(font);
+                    para.setFontSize(12);
+                    document.add(para);
+                }
+                continue;
+            }
+
+            // 处理粗体文本 - 使用不同的字体样式而不是简单替换
+            if (line.contains("**")) {
+                // 创建一个新的段落
+                Paragraph paragraph = new Paragraph();
+                paragraph.setFont(font);
+                paragraph.setFontSize(12);
+                paragraph.setMarginBottom(5);
+
+                // 分割文本处理粗体
+                String[] parts = line.split("\\*\\*");
+                boolean isBold = false;
+
+                for (String part : parts) {
+                    if (!part.isEmpty()) {
+                        Text text = new Text(part);
+                        paragraph.add(text);
+                    }
+                    isBold = !isBold;
+                }
+
+                document.add(paragraph);
                 continue;
             }
 

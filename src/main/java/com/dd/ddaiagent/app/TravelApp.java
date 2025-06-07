@@ -1,13 +1,16 @@
 package com.dd.ddaiagent.app;
 
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
+import com.dd.ddaiagent.rag.App.AppRagCustomAdvisorFactory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,11 +18,16 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+
 @Component
 @Slf4j
 public class TravelApp {
 
     private final ChatClient chatClient;
+
+    @Resource
+    private VectorStore travelAppVectorStore;
 
 
     public TravelApp(ChatModel dashscopeChatModel, @Qualifier("mySqlChatMemory")ChatMemory chatMemory,
@@ -40,5 +48,21 @@ public class TravelApp {
                         new MyLoggerAdvisor()
                 )
                 .build();
+    }
+
+    //基于RAG实现本地知识库聊天
+    public String doChatWithRag(String message, String chatId) {
+        ChatResponse chatResponse = chatClient.prompt()
+                .user(message)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
+                .advisors(
+                        new MyLoggerAdvisor(),
+                        AppRagCustomAdvisorFactory.createAppRagCustomAdvisor(travelAppVectorStore, "美食", "旅游规划")
+                )
+                .call()
+                .chatResponse();
+        String text = chatResponse.getResult().getOutput().getText();
+        log.info("text: {}", text);
+        return text;
     }
 }

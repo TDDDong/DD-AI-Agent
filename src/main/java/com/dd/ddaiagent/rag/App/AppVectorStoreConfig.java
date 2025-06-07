@@ -41,7 +41,7 @@ public class AppVectorStoreConfig {
         return simpleVectorStore;
     }
 
-    //@Bean
+    @Bean
     VectorStore travelAppVectorStore(EmbeddingModel dashscopeEmbeddingModel) {
         SimpleVectorStore simpleVectorStore = SimpleVectorStore.builder(dashscopeEmbeddingModel).build();
         //加载所有文档

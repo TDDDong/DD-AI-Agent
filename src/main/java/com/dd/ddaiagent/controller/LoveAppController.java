@@ -15,22 +15,16 @@ import reactor.core.publisher.Flux;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/ai")
-public class AiController {
+@RequestMapping("/ai/love_app")
+public class LoveAppController {
 
     @Resource
     private LoveApp loveApp;
 
-    @Resource
-    private ToolCallback[] allTools;
-
-    @Resource
-    private ChatModel dashscopeChatModel;
-
     /**
      * 同步输出的AI对话
      */
-    @GetMapping("/love_app/chat/sync")
+    @GetMapping("/chat/sync")
     public String doChatWithLoveAppSync(String message, String chatId) {
         return loveApp.doChat(message, chatId);
     }
@@ -38,7 +32,7 @@ public class AiController {
     /**
      * 基于SSE流式输出的AI对话
      */
-    @GetMapping(value = "/love_app/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> doChatWithLoveAppSSE(String message, String chatId) {
         return loveApp.doChatByStream(message, chatId);
     }
@@ -46,7 +40,7 @@ public class AiController {
     /**
      * 基于SseEmitter实现的AI流式对话
      */
-    @GetMapping("/love_app/chat/see/emitter")
+    @GetMapping("/chat/see/emitter")
     public SseEmitter doChatWithLoveAppSseEmitter(String message, String chatId) {
         //创建一个带有超时时间的SseEmitter
         SseEmitter sseEmitter = new SseEmitter(180000L);
@@ -68,15 +62,5 @@ public class AiController {
                 );
         //返回SseEmitter
         return sseEmitter;
-    }
-
-    /**
-     * 流式调用 Manus智能体对话
-     */
-    @GetMapping("/manus/chat")
-    public SseEmitter doChatWithManus(String message) {
-        //这里每次调用都需要创建一个新的实例 不能由Spring容器管理
-        DDManus ddManus = new DDManus(allTools, dashscopeChatModel);
-        return ddManus.runStream(message);
     }
 }
