@@ -27,9 +27,9 @@ import java.util.Map;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
-@Component
+@Component("LoveApp")
 @Slf4j
-public class LoveApp {
+public class LoveApp implements AIAppStrategy {
 
     public final ChatClient chatClient;
 
@@ -77,6 +77,7 @@ public class LoveApp {
                 .build();
     }
 
+    @Override
     public String doChat(String userMsg, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(userMsg)
@@ -93,6 +94,7 @@ public class LoveApp {
     /**
      * 流式输出的聊天
      */
+    @Override
     public Flux<String> doChatByStream(String userMsg, String chatId) {
         return chatClient.prompt()
                 .user(userMsg)
@@ -131,6 +133,7 @@ public class LoveApp {
     /**
      * 基于RAG实现的聊天
      */
+    @Override
     public String doChatWithRag(String message, String chatId) {
         //调用查询重写器重写
         //String rewritten = queryRewriter.doRewrite(message);

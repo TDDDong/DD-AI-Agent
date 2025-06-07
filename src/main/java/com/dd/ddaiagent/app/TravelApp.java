@@ -10,24 +10,30 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
-@Component
+@Component("TravelApp")
 @Slf4j
-public class TravelApp {
+public class TravelApp implements AIAppStrategy {
 
     private final ChatClient chatClient;
 
     @Resource
     private VectorStore travelAppVectorStore;
+
+    @Resource
+    private ToolCallback[] allTools;
 
 
     public TravelApp(ChatModel dashscopeChatModel, @Qualifier("mySqlChatMemory")ChatMemory chatMemory,
@@ -50,7 +56,32 @@ public class TravelApp {
                 .build();
     }
 
+    @Override
+    public String doChat(String userMsg, String chatId) {
+        ChatResponse chatResponse = chatClient.prompt()
+                .user(userMsg)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .tools(allTools)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content: {}", content);
+        return content;
+    }
+
+    @Override
+    public Flux<String> doChatByStream(String userMsg, String chatId) {
+        return chatClient.prompt()
+                .user(userMsg)
+                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
+                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .stream()
+                .content();
+    }
+
     //基于RAG实现本地知识库聊天
+    @Override
     public String doChatWithRag(String message, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(message)
