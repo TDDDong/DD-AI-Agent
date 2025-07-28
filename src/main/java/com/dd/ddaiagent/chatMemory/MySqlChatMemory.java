@@ -36,18 +36,10 @@ public class MySqlChatMemory implements ChatMemory {
     }
 
     @Override
-    public List<Message> get(String conversationId, int lastN) {
+    public List<Message> get(String conversationId) {
         // 获取消息实体
         List<ChatMemoryEntity> entities;
-        if (lastN > 0) {
-            // 如果指定了获取最后N条消息
-            entities = chatMemoryMapper.findLastNByConversationId(conversationId, lastN);
-            // 由于是倒序查询的，需要反转回正序
-            Collections.reverse(entities);
-        } else {
-            // 如果没有指定lastN或lastN<=0，获取所有消息
-            entities = chatMemoryMapper.findByConversationId(conversationId);
-        }
+        entities = chatMemoryMapper.findByConversationId(conversationId);
 
         // 将实体转换为消息对象
         List<Message> messageList = new ArrayList<>();

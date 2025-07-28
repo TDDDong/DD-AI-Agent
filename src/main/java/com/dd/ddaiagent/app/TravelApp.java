@@ -20,9 +20,6 @@ import reactor.core.publisher.Flux;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
-
 @Component("TravelApp")
 @Slf4j
 public class TravelApp implements AIAppStrategy {
@@ -50,7 +47,7 @@ public class TravelApp implements AIAppStrategy {
         chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(chatMemory),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         new MyLoggerAdvisor()
                 )
                 .build();
@@ -60,9 +57,8 @@ public class TravelApp implements AIAppStrategy {
     public String doChat(String userMsg, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(userMsg)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
-                .tools(allTools)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .toolCallbacks(allTools)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
@@ -74,8 +70,7 @@ public class TravelApp implements AIAppStrategy {
     public Flux<String> doChatByStream(String userMsg, String chatId) {
         return chatClient.prompt()
                 .user(userMsg)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 .stream()
                 .content();
     }
@@ -85,7 +80,7 @@ public class TravelApp implements AIAppStrategy {
     public String doChatWithRag(String message, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 .advisors(
                         new MyLoggerAdvisor(),
                         AppRagCustomAdvisorFactory.createAppRagCustomAdvisor(travelAppVectorStore, "美食", "旅游规划")

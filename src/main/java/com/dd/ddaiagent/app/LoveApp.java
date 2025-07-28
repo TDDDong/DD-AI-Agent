@@ -16,16 +16,12 @@ import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 @Component("LoveApp")
 @Slf4j
@@ -62,13 +58,13 @@ public class LoveApp implements AIAppStrategy {
         variables.put("role", "恋爱心理");
         variables.put("userNeeds", "单身、恋爱、已婚三种状态");
         variables.put("requirement", "单身状态询问社交圈拓展及追求心仪对象的困扰；" +
-                "恋爱状态询问沟通、习惯差异引发的矛盾；已婚状态询问家庭责任与亲属关系处理的问题。");
+                "恋爱状态询问沟通、习惯差异引发的矛盾；已婚状态询问家庭责任与亲属关系处理的问题");
         variables.put("guide", "详述事情经过、对方反应及自身想法");
         String SYSTEM_PROMPT = systemPromptTemplate.createMessage(variables).getText();
         chatClient = ChatClient.builder(dashScopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(chatMemory),
+                        MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         //自定义日志记录拦截器 简化日志记录
                         new MyLoggerAdvisor()
                         //Re2(Re-Reading拦截器)
@@ -81,9 +77,8 @@ public class LoveApp implements AIAppStrategy {
     public String doChat(String userMsg, String chatId) {
         ChatResponse chatResponse = chatClient.prompt()
                 .user(userMsg)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
-                .tools(allTools)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .toolCallbacks(allTools)
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
@@ -98,9 +93,8 @@ public class LoveApp implements AIAppStrategy {
     public Flux<String> doChatByStream(String userMsg, String chatId) {
         return chatClient.prompt()
                 .user(userMsg)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
-                .tools(allTools)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .toolCallbacks(allTools)
                 .stream()
                 .content();
     }
@@ -122,8 +116,7 @@ public class LoveApp implements AIAppStrategy {
         LoveReport loveReport = chatClient.prompt()
                 .user(userMsg)
                 //.system(SYSTEM_PROMPT + "每次对话后都要生成恋爱结果，标题为{用户名}的恋爱报告，内容为建议列表")
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 .call()
                 .entity(LoveReport.class);
         log.info("loveReport: {}", loveReport);
@@ -140,8 +133,7 @@ public class LoveApp implements AIAppStrategy {
         ChatResponse chatResponse = chatClient.prompt()
                 //应用重构后的内容
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 //应用 RAG 知识库问答
                 //.advisors(new QuestionAnswerAdvisor(loveAppVectorStore))
                 //应用 RAG 增强检索服务(云知识库服务)
@@ -163,9 +155,8 @@ public class LoveApp implements AIAppStrategy {
         ChatResponse response = chatClient
                 .prompt()
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
-                .tools(allTools)
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
+                .toolCallbacks(allTools)
                 .call()
                 .chatResponse();
         String content = response.getResult().getOutput().getText();
@@ -180,8 +171,7 @@ public class LoveApp implements AIAppStrategy {
         ChatResponse response = chatClient
                 .prompt()
                 .user(message)
-                .advisors(spec -> spec.param(CHAT_MEMORY_CONVERSATION_ID_KEY, chatId)
-                        .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10))
+                .advisors(spec -> spec.param(ChatMemory.CONVERSATION_ID, chatId))
                 // 开启日志，便于观察效果
                 .advisors(new MyLoggerAdvisor())
                 .tools(toolCallbackProvider)

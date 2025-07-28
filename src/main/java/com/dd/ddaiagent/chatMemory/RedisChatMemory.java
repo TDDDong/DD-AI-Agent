@@ -37,24 +37,14 @@ public class RedisChatMemory implements ChatMemory {
     }
 
     @Override
-    public List<Message> get(String conversationId, int lastN) {
+    public List<Message> get(String conversationId) {
         RList<ChatMemoryEntity> chatList = redissonClient.getList(CHAT_MEMORY_PREFIX + conversationId);
         List<Message> messageList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(chatList) || lastN <= 0) {
+        if (CollectionUtils.isEmpty(chatList)) {
             return messageList;
         }
-        // 处理lastN参数
-        List<ChatMemoryEntity> entities;
-        if (lastN < chatList.size()) {
-            // 如果lastN大于0且小于列表总长度，获取最后N条消息
-            int startIndex = chatList.size() - lastN;
-            entities = chatList.range(startIndex, chatList.size() - 1);
-        } else {
-            // 如果lastN不合理或者要求获取全部，则获取所有消息
-            entities = chatList;
-        }
 
-        for (ChatMemoryEntity chatMemory : entities) {
+        for (ChatMemoryEntity chatMemory : chatList) {
             String type = chatMemory.getType();
             String text = chatMemory.getText();
             if (MessageType.USER.getValue().equals(type)) {

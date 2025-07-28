@@ -17,7 +17,6 @@ import org.springframework.ai.model.tool.ToolCallingManager;
 import org.springframework.ai.model.tool.ToolExecutionResult;
 import org.springframework.ai.tool.ToolCallback;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,19 +39,17 @@ public class ToolCallAgent extends ReActAgent {
   
     // 禁用内置的工具调用机制，自己维护上下文  
     private final ChatOptions chatOptions;
-  
-    public ToolCallAgent(ToolCallback[] availableTools) {  
-        super();  
-        this.availableTools = availableTools;  
-        this.toolCallingManager = ToolCallingManager.builder().build();  
+
+    public ToolCallAgent(ToolCallback[] availableTools) {
+        super();
+        this.availableTools = availableTools;
+        this.toolCallingManager = ToolCallingManager.builder().build();
         // 禁用 Spring AI 内置的工具调用机制，自己维护选项和消息上下文
-        /**
-         * 这一配置将AI调用流程全部由自己管理 分为think()和act()步骤
-         */
         this.chatOptions = DashScopeChatOptions.builder()
-                .withProxyToolCalls(true)  
-                .build();  
+                .withInternalToolExecutionEnabled(false)
+                .build();
     }
+
 
     /**
      * 处理当前状态并决定下一步行动

@@ -1,13 +1,11 @@
 package com.dd.ddaiagent.rag.App;
 
 
-import cn.hutool.core.io.resource.ResourceUtil;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +16,11 @@ public class AppContextualQueryAugmenterFactory {
     public static ContextualQueryAugmenter createInstance(String field) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("field", field);
-        PromptTemplate emptyContextPromptTemplate = new PromptTemplate(resource, variables);
+        PromptTemplate emptyContextPromptTemplate = PromptTemplate.builder()
+                .renderer(StTemplateRenderer.builder().startDelimiterToken('{').endDelimiterToken('}').build())
+                .resource(resource)
+                .variables(variables)
+                .build();
         return ContextualQueryAugmenter.builder()
                 /**
                  * if (this.allowEmptyContext) {
