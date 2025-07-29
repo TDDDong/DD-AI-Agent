@@ -43,6 +43,10 @@
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-starter-nacos-prompt</artifactId>
+        </dependency>
         <!-- 支持结构化输出 -->
         <dependency>
             <groupId>com.github.victools</groupId>

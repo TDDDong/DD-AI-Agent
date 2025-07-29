@@ -1,5 +1,7 @@
 package com.dd.ddaiagent.app;
 
+import com.alibaba.cloud.ai.prompt.ConfigurablePromptTemplate;
+import com.alibaba.cloud.ai.prompt.ConfigurablePromptTemplateFactory;
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
 import com.dd.ddaiagent.rag.App.AppRagCustomAdvisorFactory;
 import jakarta.annotation.Resource;
@@ -26,6 +28,8 @@ public class TravelApp implements AIAppStrategy {
 
     private final ChatClient chatClient;
 
+    private final ConfigurablePromptTemplateFactory promptTemplateFactory;
+
     @Resource
     private VectorStore travelAppVectorStore;
 
@@ -34,8 +38,9 @@ public class TravelApp implements AIAppStrategy {
 
 
     public TravelApp(ChatModel dashscopeChatModel, @Qualifier("mySqlChatMemory")ChatMemory chatMemory,
-                     @Value("classpath:prompts/system-message.st") org.springframework.core.io.Resource systemResource) {
-        SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
+                     @Value("classpath:prompts/system-message.st") org.springframework.core.io.Resource systemResource,
+                     ConfigurablePromptTemplateFactory promptTemplateFactory) {
+        //SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
         Map<String, Object> variables = new HashMap<>();
         variables.put("role", "旅游规划");
         variables.put("userNeeds", "美食、景点、住宿三种需求");
@@ -43,7 +48,14 @@ public class TravelApp implements AIAppStrategy {
                 "景点需求询问更倾向热门大众景点，还是小众独特景点；" +
                 "住宿需求询问用户对酒店星级、地理位置、房间特色、价格区间的要求。");
         variables.put("guide", "详述需求细节、期望达成的旅行效果等");
-        String SYSTEM_PROMPT = systemPromptTemplate.createMessage(variables).getText();
+        //String SYSTEM_PROMPT = systemPromptTemplate.createMessage(variables).getText();
+        this.promptTemplateFactory = promptTemplateFactory;
+        ConfigurablePromptTemplate travelPrompt = promptTemplateFactory.create(
+                "travelPrompt",
+                systemResource,
+                variables
+        );
+        String SYSTEM_PROMPT = travelPrompt.create().getContents();
         chatClient = ChatClient.builder(dashscopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
