@@ -1,5 +1,7 @@
 package com.dd.ddaiagent.app;
 
+import com.alibaba.cloud.ai.prompt.ConfigurablePromptTemplate;
+import com.alibaba.cloud.ai.prompt.ConfigurablePromptTemplateFactory;
 import com.dd.ddaiagent.advisor.MyLoggerAdvisor;
 import com.dd.ddaiagent.rag.App.AppRagCustomAdvisorFactory;
 import com.dd.ddaiagent.rag.common.QueryRewriter;
@@ -29,7 +31,7 @@ public class LoveApp implements AIAppStrategy {
 
     public final ChatClient chatClient;
 
-    @Resource
+    //@Resource
     private VectorStore loveAppVectorStore;
 
     @Resource
@@ -51,7 +53,8 @@ public class LoveApp implements AIAppStrategy {
     private QueryRewriter queryRewriter;
 
     public LoveApp(ChatModel dashScopeChatModel, @Qualifier("mySqlChatMemory") ChatMemory chatMemory,
-                   @Value("classpath:/prompts/system-message.st") org.springframework.core.io.Resource systemResource) {
+                   @Value("classpath:/prompts/system-message.st") org.springframework.core.io.Resource systemResource,
+                   ConfigurablePromptTemplateFactory configurablePromptTemplateFactory) {
         // 直接使用资源创建模板
         SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(systemResource);
         Map<String, Object> variables = new HashMap<>();
@@ -60,7 +63,13 @@ public class LoveApp implements AIAppStrategy {
         variables.put("requirement", "单身状态询问社交圈拓展及追求心仪对象的困扰；" +
                 "恋爱状态询问沟通、习惯差异引发的矛盾；已婚状态询问家庭责任与亲属关系处理的问题");
         variables.put("guide", "详述事情经过、对方反应及自身想法");
-        String SYSTEM_PROMPT = systemPromptTemplate.createMessage(variables).getText();
+        //String SYSTEM_PROMPT = systemPromptTemplate.createMessage(variables).getText();
+        ConfigurablePromptTemplate travelPrompt = configurablePromptTemplateFactory.create(
+                "lovePrompt",
+                systemResource,
+                variables
+        );
+        String SYSTEM_PROMPT = travelPrompt.create().getContents();
         chatClient = ChatClient.builder(dashScopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
