@@ -7,3 +7,12 @@ spring:
         type: SYNC
         # sse
         stdio: false
+    alibaba:
+      mcp:
+        nacos:
+          server-addr: localhost:8848
+          namespace: public
+          username: nacos
+          password: nacos
+          registry:
+            enabled: true

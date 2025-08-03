@@ -8,15 +8,25 @@ spring:
     redis:
       host: localhost
       port: 6379
+  config:
+    import:
+      - "optional:nacos:spring.ai.alibaba.configurable.prompt.json"
+  nacos:
+    username: nacos
+    password: nacos
   ai:
-    mcp:
-      client:
-        sse:
-          connections:
-            server1:
-              url: http://localhost:8127
+#    mcp:
+#      client:
+#        sse:
+#          connections:
+#            server1:
+#              url: http://localhost:8127
 #        stdio:
 #          servers-configuration: classpath:mcp-servers.json
+    nacos:
+      prompt:
+        template:
+          enabled: true  #开启动态模板功能
 
 mybatis:
   primary:

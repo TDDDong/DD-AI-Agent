@@ -46,6 +46,11 @@
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
 		</dependency>
+		<!-- https://nacos.io/docs/latest/manual/user/ai/mcp-auto-register/?spm=5238cd80.2677a16c.0.0.77ecdcd0hhiB3m -->
+		<dependency>
+			<groupId>com.alibaba.cloud.ai</groupId>
+			<artifactId>spring-ai-alibaba-starter-nacos-mcp-server</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>cn.hutool</groupId>
@@ -65,6 +70,13 @@
 				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-bom</artifactId>
 				<version>1.0.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba.cloud.ai</groupId>
+				<artifactId>spring-ai-alibaba-bom</artifactId>
+				<version>1.0.0.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
